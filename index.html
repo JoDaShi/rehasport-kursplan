@@ -6,19 +6,14 @@
 <title>Rehasport Kursplan</title>
 <style>
 /* Montserrat self-hosted – keine externe Verbindung, DSGVO-konform */
-@font-face {
-  font-family: 'Montserrat';
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: local('Montserrat'), local('Montserrat-Regular'),
-       url('https://JoDaShi.github.io/rehasport-kursplan/Montserrat.woff2') format('woff2');
-}
+@font-face { font-family: 'Montserrat'; font-weight: 400; font-display: swap; src: url('montserrat-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Montserrat'; font-weight: 500; font-display: swap; src: url('montserrat-latin-500-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Montserrat'; font-weight: 600; font-display: swap; src: url('montserrat-latin-600-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Montserrat'; font-weight: 700; font-display: swap; src: url('montserrat-latin-700-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Montserrat'; font-weight: 800; font-display: swap; src: url('montserrat-latin-800-normal.woff2') format('woff2'); }
 
-/* Fallback-Stack falls Schrift noch nicht geladen: Nunito > Trebuchet > System */
-:root {
-  --font: 'Montserrat', 'Nunito', 'Trebuchet MS', system-ui, sans-serif;
-}
+/* Fallback-Stack */
+:root { --font: 'Montserrat', 'Trebuchet MS', system-ui, sans-serif; }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -187,8 +182,9 @@ body {
 
 .kurs-footer {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 5px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
 }
 
 .room-badge {
@@ -202,7 +198,22 @@ body {
   font-size: 0.5rem;
   font-weight: 700;
   color: white;
+  flex-shrink: 0;
 }
+
+.typ-badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.b-r { background: #eef4f0; color: #3a5244; }
+.b-o { background: #e8f0fb; color: #1a4f8a; }
+.b-n { background: #fef3e2; color: #8a5a0a; }
+.b-h { background: #fceef4; color: #8a2a50; }
 
 .trennlinie {
   height: 1px;
@@ -256,6 +267,7 @@ body {
 @media (max-width: 699px) {
   .plan-grid { display: none; }
   .plan-single { display: block; }
+  .mobile-nav { display: block; }
   .header { padding: 1rem; }
   .header-left h1 { font-size: 1.4rem; }
   .plan-wrapper { padding: 1rem; }
@@ -282,12 +294,19 @@ body {
   </div>
 </div>
 
-<div class="day-nav" id="dayNav">
-  <button class="day-btn aktiv" onclick="setTag('Montag',this)">Mo</button>
-  <button class="day-btn" onclick="setTag('Dienstag',this)">Di</button>
-  <button class="day-btn" onclick="setTag('Mittwoch',this)">Mi</button>
-  <button class="day-btn" onclick="setTag('Donnerstag',this)">Do</button>
-  <button class="day-btn" onclick="setTag('Freitag',this)">Fr</button>
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-top">
+    <div class="mobile-tag-gross">
+      <div class="mobile-wochentag" id="mobileWochentag">Montag</div>
+      <div class="mobile-datum" id="mobileDatum">–</div>
+      <div class="mobile-kurs-anzahl" id="mobileAnzahl"></div>
+    </div>
+    <div class="mobile-nav-buttons">
+      <button class="nav-pfeil" id="btnVor" onclick="navigiere(-1)">←</button>
+      <button class="nav-heute" id="btnHeute" onclick="zuHeute()">Heute</button>
+      <button class="nav-pfeil" id="btnNach" onclick="navigiere(1)">→</button>
+    </div>
+  </div>
 </div>
 
 <div class="plan-wrapper">
@@ -300,26 +319,81 @@ body {
 <div class="legende">
   <div class="legende-item"><div class="legende-linie" style="background:#5a7265"></div>Vormittag</div>
   <div class="legende-item"><div class="legende-linie" style="background:#c9a84c"></div>Nachmittag</div>
+  <div class="legende-item"><span class="typ-badge b-r">Rücken</span></div>
+  <div class="legende-item"><span class="typ-badge b-o">Orthogym</span></div>
+  <div class="legende-item"><span class="typ-badge b-n">RNS</span></div>
+  <div class="legende-item"><span class="typ-badge b-h">Hockergym</span></div>
 </div>
 
 <script>
 const TAGE = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag'];
+const TAGE_KURZ = ['Mo','Di','Mi','Do','Fr'];
+const WOCHENTAG_MAP = {1:'Montag',2:'Dienstag',3:'Mittwoch',4:'Donnerstag',5:'Freitag'};
 let alleKurse = [];
-let aktiverTag = 'Montag';
+let aktiverIndex = 0; // 0=Montag ... 4=Freitag
+
+function heuteIndex() {
+  const tag = new Date().getDay(); // 0=So, 1=Mo...5=Fr, 6=Sa
+  if (tag >= 1 && tag <= 5) return tag - 1;
+  return 0; // Wochenende → Montag
+}
+
+function aktiverTag() {
+  return TAGE[aktiverIndex];
+}
 
 function istVormittag(zeit) {
   if (!zeit) return true;
   return parseInt(zeit.split(':')[0]) < 13;
 }
 
+function updateMobileHeader() {
+  const heute = new Date();
+  const tagNr = heute.getDay();
+  // Datum des aktuellen aktiven Tages berechnen
+  const diff = aktiverIndex - (tagNr === 0 ? 6 : tagNr - 1);
+  const datum = new Date(heute);
+  datum.setDate(heute.getDate() + diff);
+  
+  document.getElementById('mobileWochentag').textContent = TAGE[aktiverIndex];
+  document.getElementById('mobileDatum').textContent = 
+    datum.getDate().toString().padStart(2,'0') + '.' + 
+    (datum.getMonth()+1).toString().padStart(2,'0');
+  
+  const anzahl = alleKurse.filter(k => k.tag === TAGE[aktiverIndex]).length;
+  document.getElementById('mobileAnzahl').textContent = 
+    anzahl > 0 ? anzahl + ' Kurs' + (anzahl !== 1 ? 'e' : '') + ' heute' : 'Keine Kurse';
+  
+  // Heute-Button highlighten wenn aktiver Tag = heute
+  const istHeute = aktiverIndex === heuteIndex() && tagNr >= 1 && tagNr <= 5;
+  document.getElementById('btnHeute').className = 'nav-heute' + (istHeute ? ' aktiv-heute' : '');
+  
+  // Pfeile deaktivieren an Grenzen
+  document.getElementById('btnVor').disabled = aktiverIndex === 0;
+  document.getElementById('btnNach').disabled = aktiverIndex === 4;
+}
+
+function getBadge(typ) {
+  if (!typ) return {cls:'b-r', label:'Rücken'};
+  const t = typ.toLowerCase();
+  if (t.includes('orthogym') || t.includes('tep')) return {cls:'b-o', label:'Orthogym'};
+  if (t.includes('hockergym') || t.includes('atemgym')) return {cls:'b-h', label:'Hockergym'};
+  if (t.includes('nacken')) return {cls:'b-n', label:'RNS'};
+  return {cls:'b-r', label:'Rücken'};
+}
+
 function karteHTML(k) {
   const vm = istVormittag(k.uhrzeit_von);
+  const badge = getBadge(k.kurstyp || k.Kurstyp);
   return '<div class="kurs-card ' + (vm ? '' : 'nachmittag') + '">' +
     '<div class="kurs-zeit">' + (k.uhrzeit_von||'') + ' – ' + (k.uhrzeit_bis||'') + ' Uhr</div>' +
     '<div class="kurs-name">' + (k.kursname||k.Kursname||'') + '</div>' +
     '<div class="kurs-trainer">' + (k.trainer||'') + '</div>' +
     (k.hinweis ? '<div class="kurs-hinweis">' + k.hinweis + '</div>' : '') +
-    '<div class="kurs-footer"><div class="room-badge">C</div></div>' +
+    '<div class="kurs-footer">' +
+      '<span class="typ-badge ' + badge.cls + '">' + badge.label + '</span>' +
+      '<div class="room-badge">C</div>' +
+    '</div>' +
   '</div>';
 }
 
@@ -329,12 +403,17 @@ function renderDesktop() {
     grid.innerHTML = '<div class="laden">Kurse werden geladen...</div>';
     return;
   }
+  // Heute markieren auf Desktop
+  const heuteTag = WOCHENTAG_MAP[new Date().getDay()] || '';
   grid.innerHTML = TAGE.map(tag => {
     const kurse = alleKurse.filter(k => k.tag === tag);
     const vm = kurse.filter(k => istVormittag(k.uhrzeit_von));
     const nm = kurse.filter(k => !istVormittag(k.uhrzeit_von));
+    const istHeute = tag === heuteTag;
     return '<div class="tag-spalte">' +
-      '<div class="tag-header">' + tag + '</div>' +
+      '<div class="tag-header" style="' + (istHeute ? 'background:#c9a84c;' : '') + '">' + 
+        tag + (istHeute ? ' ●' : '') + 
+      '</div>' +
       vm.map(karteHTML).join('') +
       (vm.length && nm.length ? '<hr class="trennlinie">' : '') +
       nm.map(karteHTML).join('') +
@@ -343,32 +422,43 @@ function renderDesktop() {
   }).join('');
 }
 
-function renderMobile(tag) {
+function renderMobile() {
+  const tag = aktiverTag();
   const el = document.getElementById('planSingle');
   const kurse = alleKurse.filter(k => k.tag === tag);
   if (!kurse.length) {
     el.innerHTML = '<div class="leer-tag">Keine Kurse an diesem Tag</div>';
-    return;
+  } else {
+    el.innerHTML = '<div class="tag-spalte">' + kurse.map(karteHTML).join('') + '</div>';
   }
-  el.innerHTML = '<div class="tag-spalte">' + kurse.map(karteHTML).join('') + '</div>';
+  updateMobileHeader();
 }
 
-function setTag(tag, btn) {
-  aktiverTag = tag;
-  document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('aktiv'));
-  btn.classList.add('aktiv');
-  renderMobile(tag);
+function navigiere(richtung) {
+  const neu = aktiverIndex + richtung;
+  if (neu >= 0 && neu <= 4) {
+    aktiverIndex = neu;
+    renderMobile();
+  }
+}
+
+function zuHeute() {
+  aktiverIndex = heuteIndex();
+  renderMobile();
 }
 
 window.addEventListener('message', function(event) {
   if (event.data && event.data.type === 'kurse') {
     alleKurse = event.data.daten;
+    aktiverIndex = heuteIndex();
     renderDesktop();
-    renderMobile(aktiverTag);
+    renderMobile();
   }
 });
 
 window.addEventListener('load', function() {
+  aktiverIndex = heuteIndex();
+  updateMobileHeader();
   window.parent.postMessage({ type: 'bereit' }, '*');
 });
 </script>
