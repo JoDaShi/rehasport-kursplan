@@ -5,255 +5,369 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rehasport Kursplan</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap');
+/* Montserrat self-hosted – keine externe Verbindung, DSGVO-konform */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: local('Montserrat'), local('Montserrat-Regular'),
+       url('https://JoDaShi.github.io/rehasport-kursplan/Montserrat.woff2') format('woff2');
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* Fallback-Stack falls Schrift noch nicht geladen: Nunito > Trebuchet > System */
+:root {
+  --font: 'Montserrat', 'Nunito', 'Trebuchet MS', system-ui, sans-serif;
+}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: #f7f6f3;
-    color: #2c2c2a;
-    padding: 1.5rem 1rem 2rem;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
+body {
+  font-family: var(--font);
+  background: #f0efea;
+  color: #2c2c2a;
+}
 
-  .header h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 2rem;
-    color: #3a5244;
-  }
+.header {
+  background: #5a7265;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
 
-  .header p {
-    font-size: 0.78rem;
-    color: #888;
-    margin-top: 4px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
+.header-left h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.5px;
+}
 
-  .tabs {
-    display: flex;
-    overflow-x: auto;
-    gap: 6px;
-    padding-bottom: 4px;
-    margin-bottom: 1.25rem;
-    scrollbar-width: none;
-  }
-  .tabs::-webkit-scrollbar { display: none; }
+.header-left p {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
 
-  .tab {
-    flex-shrink: 0;
-    padding: 8px 18px;
-    border-radius: 999px;
-    border: 1.5px solid #c5d4cc;
-    background: white;
-    color: #3a5244;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.18s ease;
-  }
+.kursraum-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 
-  .tab.aktiv {
-    background: #3a5244;
-    color: white;
-    border-color: #3a5244;
-  }
+.c-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #c9a84c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: white;
+}
 
-  .tab:hover:not(.aktiv) { background: #eef2ef; }
+.day-nav {
+  background: #4d6358;
+  display: flex;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
 
-  .kursliste {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    min-height: 80px;
-  }
+.day-btn {
+  flex: 1;
+  padding: 10px 4px;
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.15s;
+}
 
-  .kurs-card {
-    background: white;
-    border-radius: 14px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    border: 1px solid #e8ede9;
-    transition: transform 0.15s, box-shadow 0.15s;
-  }
+.day-btn.aktiv {
+  color: white;
+  border-bottom-color: #c9a84c;
+}
 
-  .kurs-card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(58,82,68,0.08);
-  }
+.day-btn:hover:not(.aktiv) {
+  color: rgba(255,255,255,0.85);
+}
 
-  .kurs-zeit {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #3a5244;
-    min-width: 92px;
-    line-height: 1.4;
-  }
+.plan-wrapper {
+  padding: 1.5rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
 
-  .kurs-info { flex: 1; }
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
 
-  .kurs-name {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #2c2c2a;
-  }
+.plan-single { display: none; }
 
-  .kurs-trainer {
-    font-size: 0.78rem;
-    color: #888;
-    margin-top: 2px;
-  }
+.tag-spalte { display: flex; flex-direction: column; gap: 7px; }
 
-  .kurs-hinweis {
-    font-size: 0.72rem;
-    color: #b07f3a;
-    margin-top: 3px;
-    font-style: italic;
-  }
+.tag-header {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: white;
+  background: #5a7265;
+  padding: 6px 8px;
+  border-radius: 6px;
+  text-align: center;
+}
 
-  .badge {
-    font-size: 0.68rem;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 999px;
-    white-space: nowrap;
-    letter-spacing: 0.02em;
-  }
+.kurs-card {
+  background: white;
+  border-radius: 8px;
+  padding: 9px 10px;
+  border: 1px solid #e0ddd6;
+  border-left: 3px solid #5a7265;
+}
 
-  .badge-ruecken           { background: #eef4f0; color: #3a5244; }
-  .badge-orthogym          { background: #e8f0fb; color: #1a4f8a; }
-  .badge-rns               { background: #fef3e2; color: #8a5a0a; }
-  .badge-hockergym         { background: #fceef4; color: #8a2a50; }
+.kurs-card.nachmittag {
+  border-left-color: #c9a84c;
+}
 
-  .leer {
-    text-align: center;
-    padding: 2.5rem;
-    color: #aaa;
-    font-size: 0.9rem;
-  }
+.kurs-zeit {
+  font-size: 0.63rem;
+  font-weight: 600;
+  color: #5a7265;
+  margin-bottom: 3px;
+}
 
-  .laden {
-    text-align: center;
-    padding: 2rem;
-    color: #aaa;
-    font-size: 0.85rem;
-  }
+.kurs-card.nachmittag .kurs-zeit {
+  color: #c9a84c;
+}
 
-  .legende {
-    margin-top: 1.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-  }
+.kurs-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #2c2c2a;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
 
-  .legende-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.7rem;
-    color: #888;
-  }
+.kurs-trainer {
+  font-size: 0.65rem;
+  color: #999;
+  margin-top: 3px;
+  font-weight: 500;
+}
 
-  .legende-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-  }
+.kurs-hinweis {
+  font-size: 0.6rem;
+  color: #c9a84c;
+  margin-top: 2px;
+  font-style: italic;
+}
 
-  @media (max-width: 480px) {
-    .kurs-card { flex-wrap: wrap; gap: 8px; }
-    .kurs-zeit { min-width: unset; }
-  }
+.kurs-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 5px;
+}
+
+.room-badge {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #c9a84c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.trennlinie {
+  height: 1px;
+  background: #e8e5de;
+  border: none;
+  margin: 2px 0;
+}
+
+.leer-tag {
+  font-size: 0.7rem;
+  color: #ccc;
+  text-align: center;
+  padding: 0.75rem 0;
+  font-weight: 500;
+}
+
+.laden {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: #aaa;
+  font-size: 0.85rem;
+}
+
+.legende {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0 1.5rem 1.5rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.legende-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.63rem;
+  font-weight: 600;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.legende-linie {
+  width: 18px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+@media (max-width: 699px) {
+  .plan-grid { display: none; }
+  .plan-single { display: block; }
+  .header { padding: 1rem; }
+  .header-left h1 { font-size: 1.4rem; }
+  .plan-wrapper { padding: 1rem; }
+  .tag-spalte { gap: 8px; }
+  .kurs-card { padding: 10px 12px; }
+  .kurs-name { font-size: 0.8rem; }
+  .kurs-zeit { font-size: 0.7rem; }
+  .kurs-trainer { font-size: 0.7rem; }
+}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>Rehasport Kursplan</h1>
-  <p>Kursraum C &middot; Etage 5</p>
+  <div class="header-left">
+    <h1>Rehasport</h1>
+    <p>Kursplan · Stand Nov. 2025</p>
+  </div>
+  <div class="header-right">
+    <div class="kursraum-badge">
+      <div class="c-dot">C</div>
+      Kursraum C · Etage 5
+    </div>
+  </div>
 </div>
 
-<div class="tabs">
-  <button class="tab aktiv" onclick="zeigeTag('Montag', this)">Montag</button>
-  <button class="tab" onclick="zeigeTag('Dienstag', this)">Dienstag</button>
-  <button class="tab" onclick="zeigeTag('Mittwoch', this)">Mittwoch</button>
-  <button class="tab" onclick="zeigeTag('Donnerstag', this)">Donnerstag</button>
-  <button class="tab" onclick="zeigeTag('Freitag', this)">Freitag</button>
+<div class="day-nav" id="dayNav">
+  <button class="day-btn aktiv" onclick="setTag('Montag',this)">Mo</button>
+  <button class="day-btn" onclick="setTag('Dienstag',this)">Di</button>
+  <button class="day-btn" onclick="setTag('Mittwoch',this)">Mi</button>
+  <button class="day-btn" onclick="setTag('Donnerstag',this)">Do</button>
+  <button class="day-btn" onclick="setTag('Freitag',this)">Fr</button>
 </div>
 
-<div class="kursliste" id="kursliste">
-  <div class="laden">Kurse werden geladen...</div>
+<div class="plan-wrapper">
+  <div class="plan-grid" id="planGrid">
+    <div class="laden">Kurse werden geladen...</div>
+  </div>
+  <div class="plan-single" id="planSingle"></div>
 </div>
 
 <div class="legende">
-  <div class="legende-item"><div class="legende-dot" style="background:#3a5244"></div>Rücken</div>
-  <div class="legende-item"><div class="legende-dot" style="background:#1a4f8a"></div>Orthogym / TEP</div>
-  <div class="legende-item"><div class="legende-dot" style="background:#8a5a0a"></div>Rücken-Nacken-Schulter</div>
-  <div class="legende-item"><div class="legende-dot" style="background:#8a2a50"></div>Hockergym</div>
+  <div class="legende-item"><div class="legende-linie" style="background:#5a7265"></div>Vormittag</div>
+  <div class="legende-item"><div class="legende-linie" style="background:#c9a84c"></div>Nachmittag</div>
 </div>
 
 <script>
+const TAGE = ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag'];
 let alleKurse = [];
 let aktiverTag = 'Montag';
 
-function getBadge(typ) {
-  if (!typ) return 'badge-ruecken';
-  const t = typ.toLowerCase();
-  if (t.includes('orthogym') || t.includes('tep')) return 'badge-orthogym';
-  if (t.includes('hockergym') || t.includes('atemgym')) return 'badge-hockergym';
-  if (t.includes('nacken')) return 'badge-rns';
-  return 'badge-ruecken';
+function istVormittag(zeit) {
+  if (!zeit) return true;
+  return parseInt(zeit.split(':')[0]) < 13;
 }
 
-function zeigeTag(tag, btn) {
+function karteHTML(k) {
+  const vm = istVormittag(k.uhrzeit_von);
+  return '<div class="kurs-card ' + (vm ? '' : 'nachmittag') + '">' +
+    '<div class="kurs-zeit">' + (k.uhrzeit_von||'') + ' – ' + (k.uhrzeit_bis||'') + ' Uhr</div>' +
+    '<div class="kurs-name">' + (k.kursname||k.Kursname||'') + '</div>' +
+    '<div class="kurs-trainer">' + (k.trainer||'') + '</div>' +
+    (k.hinweis ? '<div class="kurs-hinweis">' + k.hinweis + '</div>' : '') +
+    '<div class="kurs-footer"><div class="room-badge">C</div></div>' +
+  '</div>';
+}
+
+function renderDesktop() {
+  const grid = document.getElementById('planGrid');
+  if (!alleKurse.length) {
+    grid.innerHTML = '<div class="laden">Kurse werden geladen...</div>';
+    return;
+  }
+  grid.innerHTML = TAGE.map(tag => {
+    const kurse = alleKurse.filter(k => k.tag === tag);
+    const vm = kurse.filter(k => istVormittag(k.uhrzeit_von));
+    const nm = kurse.filter(k => !istVormittag(k.uhrzeit_von));
+    return '<div class="tag-spalte">' +
+      '<div class="tag-header">' + tag + '</div>' +
+      vm.map(karteHTML).join('') +
+      (vm.length && nm.length ? '<hr class="trennlinie">' : '') +
+      nm.map(karteHTML).join('') +
+      (!kurse.length ? '<div class="leer-tag">–</div>' : '') +
+    '</div>';
+  }).join('');
+}
+
+function renderMobile(tag) {
+  const el = document.getElementById('planSingle');
+  const kurse = alleKurse.filter(k => k.tag === tag);
+  if (!kurse.length) {
+    el.innerHTML = '<div class="leer-tag">Keine Kurse an diesem Tag</div>';
+    return;
+  }
+  el.innerHTML = '<div class="tag-spalte">' + kurse.map(karteHTML).join('') + '</div>';
+}
+
+function setTag(tag, btn) {
   aktiverTag = tag;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('aktiv'));
+  document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('aktiv'));
   btn.classList.add('aktiv');
-
-  const gefiltert = alleKurse.filter(k => k.Tag === tag);
-  const liste = document.getElementById('kursliste');
-
-  if (alleKurse.length === 0) {
-    liste.innerHTML = '<div class="laden">Kurse werden geladen...</div>';
-    return;
-  }
-
-  if (gefiltert.length === 0) {
-    liste.innerHTML = '<div class="leer">Keine Kurse an diesem Tag</div>';
-    return;
-  }
-
-  liste.innerHTML = gefiltert.map(k =>
-    '<div class="kurs-card">' +
-      '<div class="kurs-zeit">' + k.Uhrzeit_von + ' – ' + k.Uhrzeit_bis + ' Uhr</div>' +
-      '<div class="kurs-info">' +
-        '<div class="kurs-name">' + k.Kursname + '</div>' +
-        '<div class="kurs-trainer">Trainer: ' + k.Trainer + '</div>' +
-        (k.Hinweis ? '<div class="kurs-hinweis">' + k.Hinweis + '</div>' : '') +
-      '</div>' +
-      '<span class="badge ' + getBadge(k.Kurstyp) + '">' + (k.Kurstyp || '') + '</span>' +
-    '</div>'
-  ).join('');
+  renderMobile(tag);
 }
 
-// Kursdaten von Wix Velo empfangen
 window.addEventListener('message', function(event) {
   if (event.data && event.data.type === 'kurse') {
     alleKurse = event.data.daten;
-    zeigeTag(aktiverTag, document.querySelector('.tab.aktiv'));
+    renderDesktop();
+    renderMobile(aktiverTag);
   }
 });
 
-// Wix signalisieren dass das iFrame bereit ist
 window.addEventListener('load', function() {
   window.parent.postMessage({ type: 'bereit' }, '*');
 });
