@@ -547,6 +547,20 @@ function getBadge(typ) {
   return {cls:'b-r', label:'Rücken'};
 }
 
+function getRaum(k) {
+  const raum = wert(k, ['kursraum','Kursraum','raum','Raum','ort','Ort']);
+  const r = String(raum ?? '').trim();
+  if (!r) return '';
+  if (r.toLowerCase() === 'kursraum c' || r.toLowerCase() === 'raum c' || r.toLowerCase() === 'c') return 'C';
+  return r;
+}
+
+function raumHTML(raum) {
+  if (!raum) return '';
+  if (raum === 'C') return '<div class="room-badge">C</div>';
+  return '<div class="room-badge room-badge-text">' + htmlEscape(raum) + '</div>';
+}
+
 function karteHTML(k) {
   const von = normalisiereZeit(wert(k, ['uhrzeit_von','Uhrzeit_von','UhrzeitVon','von','Von']));
   const bis = normalisiereZeit(wert(k, ['uhrzeit_bis','Uhrzeit_bis','UhrzeitBis','bis','Bis']));
@@ -554,6 +568,7 @@ function karteHTML(k) {
   const trainer = wert(k, ['trainer','Trainer']);
   const hinweis = wert(k, ['hinweis','Hinweis']);
   const typ = wert(k, ['kurstyp','Kurstyp','typ','Typ']);
+  const raum = getRaum(k);
   const vm = istVormittag(von);
   const badge = getBadge(typ || kursname);
 
@@ -564,7 +579,7 @@ function karteHTML(k) {
     (hinweis ? '<div class="kurs-hinweis">' + htmlEscape(hinweis) + '</div>' : '') +
     '<div class="kurs-footer">' +
       '<span class="typ-badge ' + badge.cls + '">' + badge.label + '</span>' +
-      '<div class="room-badge">C</div>' +
+      raumHTML(raum) +
     '</div>' +
   '</div>';
 }
