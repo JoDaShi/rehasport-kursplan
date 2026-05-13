@@ -41,15 +41,26 @@ button { font-family: var(--font); }
 
 .header {
   background: var(--main);
-  padding: 1.5rem 2rem;
+  padding: 1.6rem 2rem 1.35rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.header-left {
+  flex: 1 1 auto;
+  min-width: 260px;
+}
+
+.header-right {
+  margin-left: auto;
+  flex: 0 0 auto;
 }
 
 .header-left h1 {
-  font-size: 2rem;
+  font-size: 2.35rem;
   font-weight: 800;
   color: #fff;
   letter-spacing: -0.5px;
@@ -57,26 +68,27 @@ button { font-family: var(--font); }
 }
 
 .header-left p {
-  font-size: 0.7rem;
-  color: rgba(255,255,255,0.76);
-  font-weight: 500;
-  letter-spacing: 0.1em;
+  font-size: 1rem;
+  color: rgba(255,255,255,0.82);
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-top: 4px;
+  margin-top: 6px;
+  white-space: nowrap;
 }
 
 .kursraum-badge {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   background: rgba(255,255,255,0.15);
   border: 1px solid rgba(255,255,255,0.18);
   border-radius: 999px;
-  padding: 6px 13px;
-  font-size: 0.72rem;
-  font-weight: 700;
+  padding: 8px 16px;
+  font-size: 1rem;
+  font-weight: 800;
   color: #fff;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -93,27 +105,27 @@ button { font-family: var(--font); }
   flex-shrink: 0;
 }
 
-.c-dot { width: 18px; height: 18px; font-size: 0.65rem; }
-.room-badge { width: 16px; height: 16px; font-size: 0.5rem; }
+.c-dot { width: 24px; height: 24px; font-size: 1rem; }
+.room-badge { width: 24px; height: 24px; font-size: 1rem; }
 
 .header-legend {
   flex: 1 1 100%;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 11px;
-  padding-top: 0.2rem;
+  gap: 10px 14px;
+  padding-top: 0.35rem;
 }
 
 .header-legend .legende-item {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.62rem;
+  gap: 7px;
+  font-size: 1rem;
   font-weight: 800;
-  color: rgba(255,255,255,0.86);
+  color: rgba(255,255,255,0.88);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   line-height: 1.2;
 }
 
@@ -124,22 +136,22 @@ button { font-family: var(--font); }
 }
 
 .header-legend .typ-badge {
-  font-size: 0.56rem;
-  padding: 3px 7px;
+  font-size: 1rem;
+  padding: 4px 10px;
 }
 
 .mobile-nav { display: none; }
 
 .plan-wrapper {
-  padding: 1.5rem;
-  max-width: 1040px;
+  padding: 1.75rem;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
 .plan-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
+  gap: 14px;
 }
 
 .plan-single { display: none; }
@@ -147,19 +159,19 @@ button { font-family: var(--font); }
 .tag-spalte {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   min-width: 0;
 }
 
 .tag-header {
-  font-size: 0.68rem;
+  font-size: 1rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #fff;
   background: var(--main);
-  padding: 7px 8px;
-  border-radius: 7px;
+  padding: 10px 10px;
+  border-radius: 9px;
   text-align: center;
 }
 
@@ -167,8 +179,8 @@ button { font-family: var(--font); }
 
 .kurs-card {
   background: var(--card);
-  border-radius: 10px;
-  padding: 10px 11px;
+  border-radius: 12px;
+  padding: 14px 14px;
   border: 1px solid var(--line);
   border-left: 4px solid var(--main);
   box-shadow: 0 6px 18px rgba(44, 44, 42, 0.04);
@@ -177,7 +189,7 @@ button { font-family: var(--font); }
 .kurs-card.nachmittag { border-left-color: var(--gold); }
 
 .kurs-zeit {
-  font-size: 0.65rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--main);
   margin-bottom: 4px;
@@ -186,7 +198,7 @@ button { font-family: var(--font); }
 .kurs-card.nachmittag .kurs-zeit { color: #9b7d28; }
 
 .kurs-name {
-  font-size: 0.74rem;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--text);
   text-transform: uppercase;
@@ -196,7 +208,7 @@ button { font-family: var(--font); }
 }
 
 .kurs-trainer {
-  font-size: 0.66rem;
+  font-size: 1rem;
   color: var(--muted);
   margin-top: 4px;
   font-weight: 500;
@@ -204,7 +216,7 @@ button { font-family: var(--font); }
 }
 
 .kurs-hinweis {
-  font-size: 0.61rem;
+  font-size: 1rem;
   color: #9b7d28;
   margin-top: 3px;
   font-style: italic;
@@ -220,9 +232,9 @@ button { font-family: var(--font); }
 }
 
 .typ-badge {
-  font-size: 0.58rem;
+  font-size: 1rem;
   font-weight: 800;
-  padding: 3px 7px;
+  padding: 5px 10px;
   border-radius: 999px;
   white-space: nowrap;
   letter-spacing: 0.03em;
@@ -242,7 +254,7 @@ button { font-family: var(--font); }
 }
 
 .leer-tag {
-  font-size: 0.76rem;
+  font-size: 1rem;
   color: var(--muted);
   text-align: center;
   padding: 1rem 0;
@@ -254,7 +266,7 @@ button { font-family: var(--font); }
   text-align: center;
   padding: 3rem;
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 1rem;
 }
 
 .legende {
@@ -262,7 +274,7 @@ button { font-family: var(--font); }
   flex-wrap: wrap;
   gap: 12px;
   padding: 0 1.5rem 1.5rem;
-  max-width: 1040px;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
@@ -270,7 +282,7 @@ button { font-family: var(--font); }
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.63rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
@@ -298,16 +310,16 @@ button { font-family: var(--font); }
     gap: 15px;
   }
 
-  .header-left h1 { font-size: 2rem; }
+  .header-left h1 { font-size: 2.2rem; }
 
   .header-left p {
-    font-size: 0.72rem;
+    font-size: 1rem;
     line-height: 1.45;
     max-width: 280px;
   }
 
   .kursraum-badge {
-    font-size: 0.68rem;
+    font-size: 1rem;
     padding: 7px 12px;
     letter-spacing: 0.06em;
   }
@@ -318,7 +330,7 @@ button { font-family: var(--font); }
   }
 
   .header-legend .legende-item {
-    font-size: 0.53rem;
+    font-size: 1rem;
     gap: 5px;
   }
 
@@ -327,8 +339,8 @@ button { font-family: var(--font); }
   }
 
   .header-legend .typ-badge {
-    font-size: 0.5rem;
-    padding: 3px 7px;
+    font-size: 1rem;
+    padding: 5px 10px;
   }
 
   .mobile-nav {
@@ -350,20 +362,20 @@ button { font-family: var(--font); }
   .mobile-tag-gross { min-width: 0; }
 
   .mobile-wochentag {
-    font-size: 1.15rem;
+    font-size: 1.25rem;
     font-weight: 800;
     line-height: 1.1;
   }
 
   .mobile-datum {
-    font-size: 0.82rem;
+    font-size: 1rem;
     font-weight: 600;
     opacity: 0.82;
     margin-top: 3px;
   }
 
   .mobile-kurs-anzahl {
-    font-size: 0.72rem;
+    font-size: 1rem;
     font-weight: 600;
     opacity: 0.82;
     margin-top: 4px;
@@ -395,7 +407,7 @@ button { font-family: var(--font); }
 
   .nav-heute {
     padding: 0 13px;
-    font-size: 0.72rem;
+    font-size: 1rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
@@ -431,33 +443,33 @@ button { font-family: var(--font); }
   }
 
   .kurs-zeit {
-    font-size: 0.78rem;
+    font-size: 1rem;
     margin-bottom: 7px;
   }
 
   .kurs-name {
-    font-size: 0.95rem;
+    font-size: 1.08rem;
     line-height: 1.35;
   }
 
   .kurs-trainer {
-    font-size: 0.78rem;
+    font-size: 1rem;
     margin-top: 6px;
   }
 
-  .kurs-hinweis { font-size: 0.72rem; }
+  .kurs-hinweis { font-size: 1rem; }
 
   .kurs-footer { margin-top: 12px; }
 
   .typ-badge {
-    font-size: 0.65rem;
+    font-size: 1rem;
     padding: 4px 9px;
   }
 
   .room-badge {
     width: 20px;
     height: 20px;
-    font-size: 0.6rem;
+    font-size: 1rem;
   }
 
   .leer-tag {
