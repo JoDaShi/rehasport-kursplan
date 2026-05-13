@@ -140,6 +140,13 @@ button { font-family: var(--font); }
   padding: 4px 10px;
 }
 
+.legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
 .mobile-nav { display: none; }
 
 .plan-wrapper {
@@ -466,6 +473,49 @@ button { font-family: var(--font); }
     padding: 4px 9px;
   }
 
+
+  .header-legend {
+    gap: 10px;
+    padding-top: 4px;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .legend-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .legend-row-time {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 18px;
+  }
+
+  .legend-row-types {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .header-legend .legende-item {
+    font-size: 1.08rem;
+    gap: 7px;
+    letter-spacing: 0.035em;
+    line-height: 1.25;
+  }
+
+  .header-legend .legende-linie {
+    width: 24px;
+    height: 4px;
+  }
+
+  .header-legend .typ-badge {
+    font-size: 1.05rem;
+    padding: 5px 10px;
+  }
+
   .room-badge {
     width: 20px;
     height: 20px;
@@ -501,12 +551,16 @@ button { font-family: var(--font); }
     </div>
   </div>
   <div class="header-legend" aria-label="Legende">
-    <div class="legende-item"><div class="legende-linie" style="background:#ffffff"></div>Vormittag</div>
-    <div class="legende-item"><div class="legende-linie" style="background:#c9a84c"></div>Nachmittag</div>
-    <div class="legende-item"><span class="typ-badge b-r">Rücken</span></div>
-    <div class="legende-item"><span class="typ-badge b-o">Orthogym</span></div>
-    <div class="legende-item"><span class="typ-badge b-n">RNS</span></div>
-    <div class="legende-item"><span class="typ-badge b-h">Hockergym</span></div>
+    <div class="legend-row legend-row-time">
+      <div class="legende-item"><div class="legende-linie" style="background:#ffffff"></div>Vormittag</div>
+      <div class="legende-item"><div class="legende-linie" style="background:#c9a84c"></div>Nachmittag</div>
+    </div>
+    <div class="legend-row legend-row-types">
+      <div class="legende-item"><span class="typ-badge b-r">Rücken</span></div>
+      <div class="legende-item"><span class="typ-badge b-o">Orthogym</span></div>
+      <div class="legende-item"><span class="typ-badge b-n">RNS</span></div>
+      <div class="legende-item"><span class="typ-badge b-h">Hockergym</span></div>
+    </div>
   </div>
 </div>
 
